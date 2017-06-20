@@ -1,0 +1,72 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>Chart | Storperf</title>
+    <script src="jquery-2.1.3.min.js"></script>
+    <script src="bootstrap.min.js"></script>
+    <script src="jquery.bootpag.min.js"></script>
+    <link rel="stylesheet" href="bootstrap.min.css">
+  <script src="test.js"></script>
+<style>
+.table td {
+   text-align: left;
+}
+</style>
+</head>
+
+<body>
+    <div class="container">
+    <div id="content">Dynamic Content goes here</div>
+    <div id="page-selection"></div>
+    </div>
+    <script>
+        url = 'data.json';
+        $.getJSON(url, function(data) {
+            page = []
+            results = data.results;
+            details = results[0].details;
+            metrics = details.metrics;
+            report_data = details.report_data;
+            for (var key in report_data) {
+                var text = '<div class="row text-center lead">';
+                text +=  "<h3>" + key + "</h3>" + "<br>";
+                for (var test in report_data[key]) {
+                    text += "<strong><u>"+test +"</strong>"+ "<br>";
+                    for (var status in report_data[key][test]) {
+                        text += "<strong>"+status +"</strong>"+ "<br>";
+                        text += "<table class=' table table-striped'>";
+                        for (var values in report_data[key][test][status]) {
+                            text += "<tr>";
+                            value_data = report_data[key][test][status][values];
+                            if (values == "series") {
+                                text += "<td width='50%'>" + values + "</td><td width='50%'> ";
+                                var len = value_data.length;
+                                for (var i = 0; i < len; i++) {
+                                    text += "[" + value_data[i] + "]";
+                                    if (i != len - 1)
+                                        text += ",";
+                                }
+                                text += "</td>";
+                            } else {
+                                text += "<td width='50%'>" + values + "</td><td width='50%'>" + value_data + "</td>";
+                            }
+                            text += "</tr>";
+                        }
+                        text += "</table>";
+                    }
+                }
+                text += "</div>";
+                page.push(text);
+            }
+            $("#content").html(page[0]);
+              $('#page-selection').bootpag({
+                total: page.length
+            }).on("page", function(event,num){
+                 $("#content").html(page[num-1]);
+            });
+        })
+    </script>
+</body>
+
+</html>
